@@ -23,6 +23,11 @@ export class UsersController {
         //SELECT "id", "firstName", "lastName", "username", "password", "email", "dateOfBirth", "role", "status", "createdAt", "updatedAt" FROM "Users" AS "User" ORDER BY "User"."createdAt" DESC;
     }
 
+    @Get(':id')
+    async getUser(@Param('id') id:number){
+        return this.userService.getUser(id);
+    }
+
     @Patch('/deactivate/:id')
     @UseGuards(AuthGuard(), RolesGuard)
     @Roles(UserRoleEnum.ADMIN)

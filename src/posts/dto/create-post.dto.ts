@@ -16,5 +16,5 @@ export class CreatePostDto{
 
     readonly type: PostTypeEnum;
 
-    userId: number
+    userId: number;
 }

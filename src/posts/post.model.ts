@@ -3,6 +3,7 @@ import { User } from "src/users/user.model";
 import { Comment } from "src/comments/comment.model";
 import { PostReachableByEnum } from "./enums/post.reachable-by.enum";
 import { PostTypeEnum } from "./enums/post.type.enum";
+import { Reaction } from "src/reactions/reactions.model";
 
 @Table
 export class Post extends Model<Post>{
@@ -36,6 +37,9 @@ export class Post extends Model<Post>{
 
     @HasMany(() => Comment)
     comments: Comment;
+
+    @HasMany(() => Reaction)
+    reactions: Reaction;
 }
 
 

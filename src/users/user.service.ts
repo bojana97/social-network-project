@@ -1,9 +1,9 @@
 import { Injectable, Inject, NotFoundException, HttpException, UnauthorizedException} from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./user.model";
+import { Post } from "src/posts/post.model";
 import { UserStatusEnum } from "./enums/user.status.enum";
 import { UserRoleEnum } from "./enums/user.role.enum";
-import { GetUser } from "./decorators/get-user.decorator";
 import { GetUsersFilterDto } from "./dto/get-users-filter.dto";
 
 
@@ -57,8 +57,6 @@ export class UserService {
             throw new NotFoundException(`User with ID '${id}' is not found!`);
         }
          
-        //learn how to correctly handle exceptions -> in service or controller
-
         if(user.role === UserRoleEnum.ADMIN){
             throw new UnauthorizedException(`Administrator account cannot be deactivated!`)
         }
@@ -67,6 +65,25 @@ export class UserService {
 
         user.status = UserStatusEnum.INACTIVE;
         user.save();
+
+        return user;
+    }
+
+    async getUser(id:number){
+        const user = await this.UsersRepository.findOne({
+            include: [
+                {
+                    model: Post,
+                    attributes: {exclude: ['password']}
+                }
+                
+            ],
+            where:{id: id}
+        })
+
+        if(!user){
+            throw new NotFoundException('User could not be found')
+        }
 
         return user;
     }
