@@ -2,9 +2,12 @@ import { Injectable, Inject, NotFoundException, HttpException, UnauthorizedExcep
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./user.model";
 import { Post } from "src/posts/post.model";
+import { Comment } from "src/comments/comment.model";
 import { UserStatusEnum } from "./enums/user.status.enum";
 import { UserRoleEnum } from "./enums/user.role.enum";
 import { GetUsersFilterDto } from "./dto/get-users-filter.dto";
+import { Sequelize } from "sequelize-typescript";
+import { Reaction } from "src/reactions/reactions.model";
 
 
 @Injectable()
@@ -70,17 +73,36 @@ export class UserService {
     }
 
     async getUser(id:number){
-        const user = await this.UsersRepository.findOne({
+        const user = await this.UsersRepository.findOne({       
             include: [
-                {
-                    model: Post,
-                    attributes: {exclude: ['password']}
-                }
-                
+                { model: Post}
             ],
-            where:{id: id}
+            attributes: {
+                include: [                
+                    [
+                        Sequelize.literal(`(SELECT COUNT(*) as reactions FROM "Reactions" 
+                            WHERE "Reactions"."userId" = "User"."id"
+                        )`),'reactions'
+                    ], 
+                    [
+                        Sequelize.literal(`(SELECT COUNT(*) as comments FROM "Comments" 
+                            WHERE "Comments"."userId" = "User"."id"
+                        )`), 'comments'
+                    ],
+                    [
+                        Sequelize.literal(`(SELECT COUNT("p"."id") FROM "Posts" p
+                            WHERE "p"."userId" = "User"."id"
+                        )`), 'numPosts'
+                    ],
+                ],
+               exclude: ['password']
+            },
+            where: {id: id},
+            group: ['User.id', 'posts.id']
         })
 
+
+       // console.log(user);
         if(!user){
             throw new NotFoundException('User could not be found')
         }

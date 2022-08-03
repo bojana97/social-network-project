@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Post } from "./post.model";
 import { Reaction } from "src/reactions/reactions.model";
 import { User } from "src/users/user.model";
@@ -6,6 +6,8 @@ import { Comment } from "src/comments/comment.model";
 import { Sequelize } from "sequelize-typescript";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { ReactionTypeEnum } from "src/reactions/enums/reaction.type.enum";
+import { where } from "sequelize/types";
+import { AuthDTO } from "src/auth/dto/auth.dto";
 
 
 @Injectable()
@@ -79,6 +81,17 @@ export class PostsService{
             throw new NotFoundException(`Post could not be found.`)
         }
         return post;
+   }
+
+   async deletePost(id:number, user:AuthDTO){
+        const post = await this.PostsRepository.findOne({where: {id:id, userId: user.userId}});
+
+        if(!post){
+            throw new UnauthorizedException('Post could not be found.')        
+        }
+
+        return post.destroy();
+
    }
 
 
