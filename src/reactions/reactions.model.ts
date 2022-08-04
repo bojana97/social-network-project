@@ -21,11 +21,11 @@ export class Reaction extends Model<Reaction>{
 
     @ForeignKey(() => Post)
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.UUID,
         allowNull: true,
         primaryKey: true
     })
-    postId: number;// is belongsTo needed?
+    postId: string;
 
     @BelongsTo(() => User)
     user: User;
@@ -33,11 +33,11 @@ export class Reaction extends Model<Reaction>{
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.UUID,
         allowNull: true,
         primaryKey: true
     })
-    userId: number;
+    userId: String;
 
     @BelongsTo(() => Post)
     post: Post;

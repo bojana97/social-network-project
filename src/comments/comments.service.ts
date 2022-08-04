@@ -1,10 +1,10 @@
-import { BadRequestException, Body, ConflictException, Inject, Injectable, NotFoundException, Param } from '@nestjs/common';
+import { Body, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AuthDTO } from 'src/auth/dto/auth.dto';
 import { GetUser } from 'src/users/decorators/get-user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './comment.model';
 import { PostsService } from 'src/posts/posts.service';
-import { create } from 'domain';
+import { Post } from 'src/posts/post.model';
 
 @Injectable()
 export class CommentsService {
@@ -36,24 +36,22 @@ export class CommentsService {
     }
 
     async deleteComment(id:number, user:AuthDTO){
-      //console.log(Object.values(postId)[0])
-       // const postID = Object.values(postId)[0];
-        //await this.postService.findById(postID);
-        
-     /* const comment = await this.CommentsRepository.findOne({ where: { userId: user.userId, postId: postID} });
-        if (!comment) {
-            throw new ConflictException('No comment found on post.')
-        }*/
 
-       // console.log(this.CommentsRepository.destroy({where: {id: id}}))
+        const comment = await this.CommentsRepository.findOne({
+            include:[
+                {model: Post}
+            ],
+            where: {id:id}
+        })
 
-    const result = await this.CommentsRepository.destroy({
-        where: {id: id, userId: user.userId}
-    });
+        if(!comment){
+            throw new NotFoundException('Comment could not be found.')
+        }
 
-    if(result === 0){
-        throw new BadRequestException('Comment could not be found');
-    }
+        if(comment.post.userId != user.userId || comment.userId != user.userId){
+            throw new ForbiddenException('User is not allowed to delete comment.')
+        }
 
+        return comment.destroy()
     }
 }

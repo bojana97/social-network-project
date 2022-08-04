@@ -1,6 +1,5 @@
-import { Controller, Get, Inject, Param, Patch, Post, Query, Res, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { GetUser } from "./decorators/get-user.decorator";
+import { Controller, Delete, Get, Param, Patch, Query, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "src/auth/auth.guard";
 import { Roles } from "./decorators/roles.decorator";
 import { GetUsersFilterDto } from "./dto/get-users-filter.dto";
 import { UserRoleEnum } from "./enums/user.role.enum";
@@ -9,30 +8,33 @@ import { User } from "./user.model";
 import { UserService } from "./user.service";
 
 @Controller('users')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard)
 export class UsersController {
     constructor(private readonly userService: UserService){}
 
     @Get()
-    async getUsers(@Query() filterDto: GetUsersFilterDto):Promise<User[]>{ //does it make difference if Promise:<User[]> is used?
+    async getUsers(@Query() filterDto: GetUsersFilterDto):Promise<User[]>{ 
         if(Object.keys(filterDto).length){
            return await this.userService.getUsersWithFilter(filterDto)
         }else{
             return  await this.userService.getAllUsers();
         }
-        //SELECT "id", "firstName", "lastName", "username", "password", "email", "dateOfBirth", "role", "status", "createdAt", "updatedAt" FROM "Users" AS "User" ORDER BY "User"."createdAt" DESC;
     }
 
     @Get(':id')
-    async getUser(@Param('id') id:number){
+    async getUser(@Param('id') id:string){
         return this.userService.getUser(id);
     }
 
     @Patch('/deactivate/:id')
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(AuthGuard, RolesGuard)
     @Roles(UserRoleEnum.ADMIN)
-    async deactivateUser(@Param('id') id:number):Promise<User>{
-        console.log(id, '-> user deactivated')
+    async deactivateUser(@Param('id') id:string):Promise<User>{
         return await this.userService.deactivateUser(id);
+    }
+
+    @Delete('/:id')
+    async deleteUser(@Param('id') id:string){
+        this.userService.deleteUser(id)
     }
 }

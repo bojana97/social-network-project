@@ -1,5 +1,5 @@
 export class AuthDTO {
-    userId: number
+    userId: string
     username: string
     role: string
 }

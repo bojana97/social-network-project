@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthDTO } from 'src/auth/dto/auth.dto';
 import { GetUser } from 'src/users/decorators/get-user.decorator';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Controller('comments')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard)
 export class CommentsController {
     constructor(private readonly commentsService: CommentsService){}
 
@@ -21,7 +21,7 @@ export class CommentsController {
     }
 
     @Delete(':id')
-    async delete(@Param('id') id:number, @GetUser() user:AuthDTO){
+    async delete(@Param() {id}, @GetUser() user:AuthDTO){
         return await this.commentsService.deleteComment(id, user)
     }
 

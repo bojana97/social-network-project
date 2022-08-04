@@ -2,12 +2,10 @@ import { Injectable, Inject, NotFoundException, HttpException, UnauthorizedExcep
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./user.model";
 import { Post } from "src/posts/post.model";
-import { Comment } from "src/comments/comment.model";
 import { UserStatusEnum } from "./enums/user.status.enum";
 import { UserRoleEnum } from "./enums/user.role.enum";
 import { GetUsersFilterDto } from "./dto/get-users-filter.dto";
 import { Sequelize } from "sequelize-typescript";
-import { Reaction } from "src/reactions/reactions.model";
 
 
 @Injectable()
@@ -20,7 +18,8 @@ export class UserService {
     async create(user: CreateUserDto): Promise<User> {
         const foundUser = await this.UsersRepository.findOne({'where': {username: user.username}})        
         if(foundUser){
-            throw new HttpException('Username already exists.', 409) //https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
+            throw new HttpException('Username already exists.', 409) 
+            //https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
         }
 
         return this.UsersRepository.create<User>(user);
@@ -30,7 +29,7 @@ export class UserService {
         return await this.UsersRepository.findOne({ where: { username } });
     }
 
-    async findOneById(id: number): Promise<User> {
+    async findOneById(id: string): Promise<User> {
         return await this.UsersRepository.findOne<User>({ where: { id } });
     }
 
@@ -53,7 +52,7 @@ export class UserService {
         return users;   
     }
 
-    async deactivateUser(id:number):Promise<User>{
+    async deactivateUser(id: string):Promise<User>{
         const user = await this.findOneById(id);
         
         if(!user){ 
@@ -72,7 +71,7 @@ export class UserService {
         return user;
     }
 
-    async getUser(id:number){
+    async getUser(id: string){
         const user = await this.UsersRepository.findOne({       
             include: [
                 { model: Post}
@@ -101,13 +100,20 @@ export class UserService {
             group: ['User.id', 'posts.id']
         })
 
-
-       // console.log(user);
         if(!user){
             throw new NotFoundException('User could not be found')
         }
 
         return user;
+    }
+
+    async deleteUser(id:string){
+        const user = await this.UsersRepository.findOne({where:{id:id}});
+        if(!user){
+            throw new NotFoundException('User could not be found')
+        }
+
+        return user.destroy();
     }
     
 

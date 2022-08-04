@@ -16,7 +16,7 @@ export const databaseProviders = [
           password: 'postgres',
           database: 'social-network-db',
         });
-        sequelize.addModels([Post,User,Comment, Reaction]);
+        sequelize.addModels([Post, User,Comment, Reaction]);
         await sequelize.sync();
         return sequelize;
       },

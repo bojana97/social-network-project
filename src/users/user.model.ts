@@ -1,4 +1,5 @@
-import { Table, Model, Column, DataType, Default, HasMany} from "sequelize-typescript";
+import { UUIDV4 } from "sequelize";
+import { Table, Model, Column, DataType, Default, HasMany, DeletedAt, Sequelize} from "sequelize-typescript";
 import { Comment } from "src/comments/comment.model";
 import { Post } from "src/posts/post.model";
 import { Reaction } from "src/reactions/reactions.model";
@@ -9,8 +10,8 @@ import { UserStatusEnum } from "./enums/user.status.enum";
 @Table
 export class User extends Model<User>{
 
-    @Column({type: DataType.INTEGER, autoIncrement:true, primaryKey: true,})
-    id: number;
+    @Column({type: DataType.UUID, defaultValue: UUIDV4, primaryKey: true,})
+    id: string;
 
     @Column({type: DataType.STRING, allowNull:false})
     firstName: string;
@@ -18,7 +19,7 @@ export class User extends Model<User>{
     @Column({type: DataType.STRING,  allowNull:false})
     lastName: string;
 
-    @Column({type: DataType.STRING,  allowNull:false, unique: true})
+    @Column({type: DataType.STRING,  allowNull:false})
     username: string;
 
     @Column({type: DataType.STRING,  allowNull:false})
@@ -36,9 +37,8 @@ export class User extends Model<User>{
     @Column({type: DataType.STRING, defaultValue: UserStatusEnum.ACTIVE,})
     status: UserStatusEnum;
 
-    /*
-    @Column({type: DataType.DATE, defaultValue: timeStamp, field: 'registeredAt' })
-    registeredAt: Date;  how to use created at as registered at column */
+    @DeletedAt 
+    deletedAt: Date;
 
     @HasMany(() => Post)
     posts: Post[]
@@ -49,7 +49,6 @@ export class User extends Model<User>{
     @HasMany(() => Reaction)
     reactions: Reaction[]
 
-    //paranoid: true
 }
 
 

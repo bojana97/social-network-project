@@ -1,14 +1,18 @@
-import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, DeletedAt, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { User } from "src/users/user.model";
 import { Comment } from "src/comments/comment.model";
 import { PostReachableByEnum } from "./enums/post.reachable-by.enum";
 import { PostTypeEnum } from "./enums/post.type.enum";
 import { Reaction } from "src/reactions/reactions.model";
+import { UUIDV4 } from "sequelize";
 
 @Table
 export class Post extends Model<Post>{
-    @Column({type: DataType.INTEGER, autoIncrement:true, primaryKey: true,})
-    id: number;
+    /*@Column({type: DataType.INTEGER, autoIncrement:true, primaryKey: true,})
+    id: number;*/
+
+    @Column({type: DataType.UUID, defaultValue: UUIDV4, primaryKey: true,})
+    id: string;
 
     @Column({type: DataType.STRING,})
     title: string;
@@ -27,10 +31,10 @@ export class Post extends Model<Post>{
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.UUID,
         allowNull: true,
     })
-    userId: number;
+    userId: string;
 
     @BelongsTo(() => User)
     user: User;
@@ -40,6 +44,9 @@ export class Post extends Model<Post>{
 
     @HasMany(() => Reaction)
     reactions: Reaction;
+
+    @DeletedAt
+    deletedAt: Date;
 }
 
 

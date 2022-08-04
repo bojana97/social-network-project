@@ -1,5 +1,4 @@
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, MinLength} from "class-validator";
-import { Default } from "sequelize-typescript";
+import { IsEmail, IsEnum, IsNotEmpty, MinLength} from "class-validator";
 import { UserRoleEnum } from "../enums/user.role.enum";
 import { UserStatusEnum } from "../enums/user.status.enum";
 

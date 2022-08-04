@@ -8,8 +8,12 @@ import { ReactionsService } from './reactions.service';
 
 @Module({
   controllers: [ReactionsController],
-  providers: [ReactionsService, ReactionsRepository,PostsService, PostsRepository],
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' })]
+  providers: [
+    ReactionsService, 
+    ReactionsRepository,
+    PostsService, 
+    PostsRepository
+  ]
 })
 
 export class ReactionsModule {}

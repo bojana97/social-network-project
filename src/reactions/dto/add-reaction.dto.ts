@@ -6,8 +6,8 @@ export class AddReactionDto{
     @IsEnum(ReactionTypeEnum, { message: 'Reaction on post can be upvote or downvote only.'})
     type: ReactionTypeEnum;
 
-    userId: number;
+    userId: string;
 
     @IsNotEmpty()
-    postId: number;
+    postId: string;
 }

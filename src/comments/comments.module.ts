@@ -9,7 +9,7 @@ import { CommentsService } from './comments.service';
 @Module({
   controllers: [CommentsController],
   providers: [CommentsService, CommentsRepository, PostsService, PostsRepository ],
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
+ // imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
   exports: [CommentsRepository],
 })
 export class CommentsModule {}

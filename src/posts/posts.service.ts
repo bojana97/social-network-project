@@ -6,9 +6,7 @@ import { Comment } from "src/comments/comment.model";
 import { Sequelize } from "sequelize-typescript";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { ReactionTypeEnum } from "src/reactions/enums/reaction.type.enum";
-import { where } from "sequelize/types";
 import { AuthDTO } from "src/auth/dto/auth.dto";
-
 
 @Injectable()
 export class PostsService{
@@ -18,7 +16,7 @@ export class PostsService{
         return this.PostsRepository.create(createPostDto);
    }
 
-   async findById(id:number):Promise<Post>{
+   async findById(id:string):Promise<Post>{
       const post = await this.PostsRepository.findOne({where:{id}})
 
       if(!post){
@@ -31,7 +29,7 @@ export class PostsService{
    //get all posts sorted by number of uvotes
    async findAll():Promise<Post[]>{
 
-    const posts = this.PostsRepository.findAll({
+    const sortedPosts = await this.PostsRepository.findAll({
         include:[{
             attributes: [],
             model: Reaction,
@@ -43,13 +41,17 @@ export class PostsService{
         group: ['Post.id'],
         order: [[Sequelize.col('likes'), 'DESC']]
     })
+    
+    if(sortedPosts.length < 1){
+        return await this.PostsRepository.findAll();
+    }
 
-    return posts;
+    return sortedPosts;
 
    }
 
    //get post by id with user details, comments, number of upvotes/downvotes
-   async getPost(id:number){
+   async getPost(id:string){
         const post = await this.PostsRepository.findOne({
             include: [
                 {
@@ -83,7 +85,7 @@ export class PostsService{
         return post;
    }
 
-   async deletePost(id:number, user:AuthDTO){
+   async deletePost(id:string, user:AuthDTO){
         const post = await this.PostsRepository.findOne({where: {id:id, userId: user.userId}});
 
         if(!post){
