@@ -2,6 +2,7 @@ import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/users/user.service';
 import { Response } from 'express';
+import { UserStatusEnum } from 'src/users/enums/user.status.enum';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -36,6 +37,12 @@ export class AuthMiddleware implements NestMiddleware {
       }
 
       request.user = await this.userService.findOneById(userId);
+
+      if(request.user.status == UserStatusEnum.INACTIVE){
+        this.logException(request, 'User is deactivated.');
+        return next();
+      }
+
     } catch (err) {
       this.logException(request, err.message);
     }

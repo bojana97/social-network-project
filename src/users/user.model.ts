@@ -34,7 +34,7 @@ export class User extends Model<User>{
     @Column({type: DataType.STRING, allowNull: false})
     role: UserRoleEnum;
 
-    @Column({type: DataType.STRING, defaultValue: UserStatusEnum.ACTIVE,})
+    @Column({type: DataType.STRING, defaultValue: UserStatusEnum.ACTIVE})
     status: UserStatusEnum;
 
     @DeletedAt 

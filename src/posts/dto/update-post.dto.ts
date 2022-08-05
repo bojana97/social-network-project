@@ -5,7 +5,7 @@ import {ApiProperty} from "@nestjs/swagger";
 import { title } from "process";
 import { ENUM } from "sequelize/types";
 
-export class CreatePostDto{
+export class UpdatePostDto{
     @IsNotEmpty()
     @ApiProperty({type: String})
     readonly title: string;
@@ -23,7 +23,4 @@ export class CreatePostDto{
 
     @ApiProperty({enum: PostTypeEnum, example: PostTypeEnum.mountainPath})
     readonly type: PostTypeEnum;
-
-    //@ApiProperty({type: String})
-    userId: string;
 }

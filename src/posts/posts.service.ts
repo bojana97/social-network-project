@@ -7,6 +7,7 @@ import { Sequelize } from "sequelize-typescript";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { ReactionTypeEnum } from "src/reactions/enums/reaction.type.enum";
 import { AuthDTO } from "src/auth/dto/auth.dto";
+import { UpdatePostDto } from "./dto/update-post.dto";
 
 @Injectable()
 export class PostsService{
@@ -91,11 +92,34 @@ export class PostsService{
         if(!post){
             throw new UnauthorizedException('Post could not be found.')        
         }
-
         return post.destroy();
+   }
+
+   async update(){
 
    }
 
+   async updatePost(id:string, updatePostDto:UpdatePostDto, user:AuthDTO){
 
+    const updatedRows = await this.PostsRepository.update({
+        title: updatePostDto.title,
+        description: updatePostDto.description,
+        location: updatePostDto.location,
+        reachableBy: updatePostDto.reachableBy,
+        type: updatePostDto.type
+    },{
+        where: {id:id, userId: user.userId}
+    })
+
+    if(updatedRows[0] < 1){
+        throw new NotFoundException('Post could not be found')
+    }
+    
+    const updatedPost = await this.PostsRepository.findOne({
+        where: {id:id, userId: user.userId}
+    })
+
+    return updatedPost;
+  }
 
 }

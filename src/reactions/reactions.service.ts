@@ -14,7 +14,7 @@ export class ReactionsService {
     ) { }
 
     async addReaction(addReactionDto: AddReactionDto, @GetUser() auth: AuthDTO,): Promise<Reaction> {
-        await this.postService.findById(addReactionDto.postId);// is this correct way to check if post exists at all? same od delete and update??
+        await this.postService.findById(addReactionDto.postId);
         
         const foundPostReaction = await this.ReactionsRepository.findOne({ 
             where: { userId: auth.userId, postId: addReactionDto.postId } 
